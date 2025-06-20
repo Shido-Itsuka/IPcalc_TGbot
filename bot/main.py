@@ -1,4 +1,5 @@
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import telegram as tg
 import handlers as h
 import os
 from dotenv import load_dotenv
@@ -21,6 +22,14 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
+async def set_bot_commands(app):
+    commands = [
+        tg.BotCommand("start", "Запустить бота"),
+        tg.BotCommand("help", "Справка по командам"),
+        tg.BotCommand("profile", "Показать профиль"),
+    ]
+    await app.bot.set_my_commands(commands)
+
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
@@ -29,6 +38,8 @@ def main():
     app.add_handler(CommandHandler("start", h.start_handler))
     app.add_handler(CommandHandler("help", h.help_handler))
     app.add_handler(CommandHandler("profile", h.profile_handler))
+
+    app.post_init = set_bot_commands
 
     app.run_polling()
 
